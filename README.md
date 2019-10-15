@@ -1,3 +1,5 @@
+# WORK IN PROGRESS 
+
 # TransferWise Simple API PHP Class
 
 ## Introduction
@@ -41,9 +43,9 @@ NEVER save your API keys in the main code files. In this tutorial, they are save
   * Add new token: Read only
   * Logout
 
-
 * Visit https://transferwise.com
   * If you don't already have an account: Register. Create a new account. Record your login details (email address/password)
+  * Login
   * Open Settings page. https://transferwise.com/user/settings
   * Add new token: Full access
   * Add new token: Read only
@@ -53,5 +55,27 @@ NEVER save your API keys in the main code files. In this tutorial, they are save
 * Login to your Web server
 * Create a new folder that can be accessed via a URL. (e.g.) xxx/public_html/TransferWise
 * Create a subfolder called *includes*. (e.g.) xxx/public_html/TransferWise/includes
+* Create and save this file in the includes folder. Copy and paste the 4 tokens created at TransferWise before saving
+```
+<?php
+//
+// Filename: .../TransferWise/includes/configure.php
+//
 
+//PRODUCTION
+define('API_KEY_TOKEN_READONLY'    ,'copy_and_paste_from_TransferWise'); 
+define('API_KEY_TOKEN_FULL_ACCESS' ,'copy_and_paste_from_TransferWise''); 
+define('PROFILE_ID_PERSONAL'       ,'');
+define('PROFILE_ID_BUSINESS'       ,'');
+
+//SANDBOX
+define('SANDBOX_TOKEN_READONLY'    ,'copy_and_paste_from_TransferWise''); 
+define('SANDBOX_TOKEN_FULL_ACCESS' ,'copy_and_paste_from_TransferWise''); 
+define('SANDBOX_ID_PERSONAL'       ,'');
+define('SANDBOX_ID_BUSINESS'       ,'');
+?>
+```
+* Create and save this file in the includes folder 
+```
+```
 
