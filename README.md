@@ -63,10 +63,103 @@ NEVER save your API keys in the main code files. In this tutorial, they are save
 Using your favourite web browser, visit your test.php page with a URL similar to this: 
 `https://my.web.server/TransferWise/test.php?SANDBOX&UNKNOWN`
 
+You should see something like this (xxxxx will profile IDs):
+```
+get Profiles
+Please edit includes/configure.php to include these lines
+
+define('SANDBOX_ID_PERSONAL','xxxxx')
+define('SANDBOX_ID_BUSINESS','xxxxx')
+```
+On your web server, edit your `includes/configure.php` file as instructed.
+
+Visit your test.php page with a URL similar to this: 
+`https://my.web.server/TransferWise/test.php?UNKNOWN`
+
 You should see something like this:
 ```
+get Profiles
+See resultPlease edit includes/configure.php to include these lines
+define('PROFILE_ID_PERSONAL','xxxxx')
+define('PROFILE_ID_BUSINESS','xxxxx')
+```
+On your web server, edit your `includes/configure.php` file as instructed.
+
+Visit your test.php page with a URL similar to this: 
+`https://my.web.server/TransferWise/test.php?SANDBOX`
+
+You should now see something like this:
+```
+Get Exch Rate
+See result
+
+Create an Address
+See result
+
+Create email Recipient
+See result
+
+Create GBP (sort_code) Recipient
+See: https://api-docs.transferwise.com/#recipient-accounts-create-gbp-recipient
+See result
+
+Create GBP (IBAN) Recipient
+See: https://api-docs.transferwise.com/#recipient-accounts-create-gbp-recipient
+See result
+
+Create USD Recipient
+See: https://api-docs.transferwise.com/#recipient-accounts-create-usd-recipient
+See result
+
+Created account named Dummy Name, with id = 13708891
+Deleting account with id = 13708891 ......
 ```
 
-Update includes/configure.php as indicated.
+Click on the *See result* icons to expand the response returned by TransferWise. You should see that each succeeded.
 
-Edit test.php as below
+Visit your test.php page with a URL similar to this: 
+`https://my.web.server/TransferWise/test.php`
+
+You should now see something like this:
+```
+Get Exch Rate
+See result
+
+Create an Address
+See result
+
+Create email Recipient
+See result
+
+Create GBP (sort_code) Recipient
+See: https://api-docs.transferwise.com/#recipient-accounts-create-gbp-recipient
+See result
+
+Create GBP (IBAN) Recipient
+See: https://api-docs.transferwise.com/#recipient-accounts-create-gbp-recipient
+See result
+
+Create USD Recipient
+See: https://api-docs.transferwise.com/#recipient-accounts-create-usd-recipient
+See result
+
+Created account named Dummy Name, with id =
+Deleting account with id = ......
+stdClass Object
+(
+    [timestamp] => 2019-10-17T07:58:30.514570Z
+    [errors] => Array
+        (
+            [0] => stdClass Object
+                (
+                    [code] => INVALID_INPUT
+                    [message] => Unable to process request
+                    [arguments] => Array
+                        (
+                        )
+                )
+        )
+)
+```
+
+Note that it is normal to see some errors. The `test.php` file was trying to create real payment accounts with fake details, so they failed. If you edit `test.php` with valid account details, it should work.
