@@ -23,7 +23,6 @@ class TransferWise {
             case SANDBOX_ID_UNKNOWN: 
             case SANDBOX_ID_PERSONAL: 
             case SANDBOX_ID_BUSINESS: 
-                
                 $this->tw->api_key =  ($readOnly?SANDBOX_TOKEN_READONLY:SANDBOX_TOKEN_FULL); 
                 $this->tw->url     = 'https://api.sandbox.transferwise.tech';
                 break;
@@ -31,7 +30,6 @@ class TransferWise {
             default:
                  echo "Error: Unknown  profileId: $profileId \n";
         }
-        
     }
 
     public function __destruct() {
