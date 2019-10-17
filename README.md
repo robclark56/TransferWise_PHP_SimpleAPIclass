@@ -65,6 +65,9 @@ Using your favourite web browser, visit your test.php page with a URL similar to
 
 You should see something like this (xxxxx will profile IDs):
 ```
+TransferWise Server: Sandbox
+Profile: UNKNOWN
+
 get Profiles
 Please edit includes/configure.php to include these lines
 
@@ -78,6 +81,9 @@ Visit your test.php page with a URL similar to this:
 
 You should see something like this:
 ```
+TransferWise Server: Production
+Profile: UNKNOWN
+
 get Profiles
 See resultPlease edit includes/configure.php to include these lines
 define('PROFILE_ID_PERSONAL','xxxxx')
@@ -90,6 +96,9 @@ Visit your test.php page with a URL similar to this:
 
 You should now see something like this:
 ```
+TransferWise Server: Sandbox
+Profile: PERSONAL
+
 Get Exch Rate
 See result
 
@@ -122,6 +131,9 @@ Visit your test.php page with a URL similar to this:
 
 You should now see something like this:
 ```
+TransferWise Server: Production
+Profile: PERSONAL
+
 Get Exch Rate
 See result
 
