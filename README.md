@@ -7,6 +7,10 @@ This PHP class is completely standalone; it does not require composer to bring i
 
 It has been written for my own use, and as such does not include methods for all TransferWise [API calls](https://api-docs.transferwise.com/#transferwise-api), but I welcome contributors to add methods to add access to other API calls.
 
+A *test* program is included to :
+* Confirm the class has been configured correctly, and is working OK;
+* Show example code on how to use the class
+
 ## Requirements
 A webserver with PHP, that you create/save new PHP files.
 
