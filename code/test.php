@@ -2,6 +2,20 @@
 //
 // Filename: .../test.php
 //
+// Usage:
+//   https://my.web.server/TransferWise/test.php[?OPTIONS]
+//    where OPTIONS is zero or more of the below, in any order, joined by '&'
+//     SANDBOX  = Use TransferWise Sandbox server (otherwise use Production server)
+//     BUSINESS = Use TransferWise Business account
+//     UNKNOWN  = Query for ProfileIDs
+//
+//  e.g.
+//   https://my.web.server/TransferWise/test.php                        Use TransferWise Production server, Personal acct
+//   https://my.web.server/TransferWise/test.php?UNKNOWN                Use TransferWise Production server, Unknown  acct
+//   https://my.web.server/TransferWise/test.php?BUSINESS               Use TransferWise Production server, Business acct
+//   https://my.web.server/TransferWise/test.php?SANDBOX                Use TransferWise Sandbox server, Personal acct
+//   https://my.web.server/TransferWise/test.php?SANDBOX&UNKNOWN        Use TransferWise Sandbox server, Unknown  acct
+//   https://my.web.server/TransferWise/test.php?SANDBOX&BUSINESS       Use TransferWise Sandbox server, Business acct
 ?>
 <!DOCTYPE html>
 <head>
@@ -12,30 +26,28 @@
 
 include('includes/class_TransferWise.php');
 
-//Set profileID
-// Uncomment only one of the lines below at a time
-$profileId = 
-    //Phase 1 (IDs unknown) 
- //   SANDBOX_ID_UNKNOWN  
-//   PROFILE_ID_UNKNOWN  
-    
-    //Phase 2 (IDs known)
-   SANDBOX_ID_PERSONAL 
-//    SANDBOX_ID_BUSINESS
-//    PROFILE_ID_PERSONAL
-//    PROFILE_ID_BUSINESS
-    
-    ;
-    
+//Set profileId
+$profileName = (isset($_GET['SANDBOX']))?'SANDBOX_ID_':'PROFILE_ID_';
+if(isset($_GET['UNKNOWN']) ){
+    $profileName .= 'UNKNOWN';
+} elseif(isset($_GET['BUSINESS']) ) {
+    $profileName .= 'BUSINESS';
+} else {
+    $profileName .= 'PERSONAL';
+}
+$profileId = (defined($profileName))?constant($profileName):$profileName;
 
 //Create Read Only instance
 $tw = new TransferWise($profileId);
 
-$profiles=json_decode($tw->getProfiles());
-//echo '<hr>get Profiles <br><pre>'.print_r($profiles,1).'<br>';
 
 if(strstr($profileId,'_UNKNOWN') !== false) {
     //Phase 1 - IDs unknown
+    $profiles=json_decode($tw->getProfiles());
+    echo '<hr>get Profiles <br>';
+    echo '<details><summary>See result</summary>';
+    echo '<pre>'.print_r($profiles,1).'</pre>';
+    echo '</details>';
     $profilePrefix = strtok($profileId,'_');
     echo "Please edit includes/configure.php to include these lines\n\n"; 
     echo '<pre>';
@@ -47,8 +59,7 @@ if(strstr($profileId,'_UNKNOWN') !== false) {
 }
 
 echo "<hr>Get Exch Rate<br>";
-echo '<details>';
-echo '<summary>See result</summary>';
+echo '<details><summary>See result</summary>';
 echo '<pre>';
 echo print_r(json_decode($tw->getExchangeRate('USD','EUR')),1);
 echo '</pre>';
