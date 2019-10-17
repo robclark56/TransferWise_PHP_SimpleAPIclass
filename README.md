@@ -60,4 +60,13 @@ NEVER save your API keys in the main code files. In this tutorial, they are save
 * Create and save [test.php](code/test.php) in the main folder 
 
 ### 3. Your Web Browser
-Using your favourite web browser, visit
+Using your favourite web browser, visit your test.php page with a URL similar to this: 
+`https://my.web.server/TransferWise/test.php?SANDBOX&UNKNOWN`
+
+You should see something like this:
+```
+```
+
+Update includes/configure.php as indicated.
+
+Edit test.php as below
