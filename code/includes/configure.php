@@ -1,6 +1,6 @@
 <?php
 //
-// Filename: .../TransferWise/includes/configure.php
+// Filename: .../includes/configure.php
 //
 
 //PRODUCTION
