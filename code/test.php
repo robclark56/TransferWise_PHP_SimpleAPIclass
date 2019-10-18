@@ -16,6 +16,8 @@
 //   https://my.web.server/TransferWise/test.php?SANDBOX                Use TransferWise Sandbox server, Personal acct
 //   https://my.web.server/TransferWise/test.php?SANDBOX&UNKNOWN        Use TransferWise Sandbox server, Unknown  acct
 //   https://my.web.server/TransferWise/test.php?SANDBOX&BUSINESS       Use TransferWise Sandbox server, Business acct
+
+
 ?>
 <!DOCTYPE html>
 <head>
@@ -27,19 +29,30 @@
 include('includes/class_TransferWise.php');
 
 //Set profileId
-$profileName = (isset($_GET['SANDBOX']))?'SANDBOX_ID_':'PROFILE_ID_';
-if(isset($_GET['UNKNOWN']) ){
-    $profileName .= 'UNKNOWN';
-} elseif(isset($_GET['BUSINESS']) ) {
-    $profileName .= 'BUSINESS';
+echo 'TransferWise Server: ';
+if(isset($_GET['SANDBOX'])){
+    echo 'Sandbox';
+    $profileName = 'SANDBOX_ID_';
 } else {
-    $profileName .= 'PERSONAL';
+    echo 'Production';
+    $profileName = 'PROFILE_ID_';
 }
+
+
+if(isset($_GET['UNKNOWN']) ){
+    $profileSuffix = 'UNKNOWN';
+} elseif(isset($_GET['BUSINESS']) ) {
+    $profileSuffix = 'BUSINESS';
+} else {
+    $profileSuffix = 'PERSONAL';
+}
+echo "<br>Profile: $profileSuffix<br>";
+$profileName .= $profileSuffix;
+
 $profileId = (defined($profileName))?constant($profileName):$profileName;
 
 //Create Read Only instance
 $tw = new TransferWise($profileId);
-
 
 if(strstr($profileId,'_UNKNOWN') !== false) {
     //Phase 1 - IDs unknown
