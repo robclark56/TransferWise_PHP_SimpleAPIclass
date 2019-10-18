@@ -20,7 +20,7 @@ For added security, you can ignore all the non-SANDBOX instructions below and re
 ## Summary of Steps
 
 1. Transfer Wise
-    1. Create Sandbox account (Personal)
+    1. Create Sandbox account (Personal and Business)
         1. Create API Token - Read only
         1. Create API Token - Full access
     1. Create Production account (Personal, if not already created)
@@ -45,6 +45,7 @@ For added security, you can ignore all the non-SANDBOX instructions below and re
   * Open Settings page. https://sandbox.transferwise.tech/user/settings
   * Add new API token: Full access
   * Add new API token: Read only
+  * Create a Business account. (This shares the same API tokens already created) 
   * Logout
 
 * Visit https://transferwise.com
@@ -95,6 +96,8 @@ Please edit includes/configure.php to include these lines
 define('PROFILE_ID_PERSONAL','xxxxx');
 define('PROFILE_ID_BUSINESS','xxxxx');
 ```
+Note: If you do not have a Business account in your live TransferWise profile, you will only see the PROFILE_ID_PERSONAL line.
+
 On your web server, edit your `includes/configure.php` file as instructed.
 
 Visit your test.php page with a URL similar to this: 
