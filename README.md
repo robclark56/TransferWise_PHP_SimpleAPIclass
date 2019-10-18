@@ -1,5 +1,3 @@
-# WORK IN PROGRESS 
-
 # TransferWise Simple API PHP Class
 
 ## Introduction
@@ -15,7 +13,9 @@ A *test* program is included to :
 A webserver with PHP, that you create/save new PHP files.
 
 ## Security
-NEVER save your API keys in the main code files. In this tutorial, they are saved in a separate *include* file. The API key in this tutorial is a *Limited Access* key; meaning if it is compromised the bad actor can not spend your money. You will need to use a *Full Access* API key if you need to spend money, etc.
+NEVER save your API keys in the main code files. In this tutorial, they are saved in a separate *include* file. 
+
+For added security, you can ignore all the non-SANDBOX instructions below and restrict your actions to the (safe) Sandbox environment.
 
 ## Summary of Steps
 
@@ -32,10 +32,10 @@ NEVER save your API keys in the main code files. In this tutorial, they are save
     1. Create test.php
 1. Your Web Browser
     1. Run test.php to get profileIDs
-1. Your Web Server
-    1. Update configure.php with these profileIds
-1. Your Web Browser
-    1. Run test.php to GET and POST information
+    1. Update configure.php with these profileIDs
+    1. Run test.php to exercise the code in these modes:
+       1. SANDBOX
+       1. PRODUCTION (live)
 
 ## Step by Step
 
@@ -43,16 +43,16 @@ NEVER save your API keys in the main code files. In this tutorial, they are save
 * Visit https://sandbox.transferwise.tech/
   * Register. Create a new account. Record your login details (email address/password)
   * Open Settings page. https://sandbox.transferwise.tech/user/settings
-  * Add new token: Full access
-  * Add new token: Read only
+  * Add new API token: Full access
+  * Add new API token: Read only
   * Logout
 
 * Visit https://transferwise.com
   * If you don't already have an account: Register. Create a new account. Record your login details (email address/password)
   * Login
   * Open Settings page. https://transferwise.com/user/settings
-  * Add new token: Full access
-  * Add new token: Read only
+  * Add new API token: Full access
+  * Add new API token: Read only
   * Logout
 
 ### 2. Web Server
@@ -73,10 +73,11 @@ TransferWise Server: Sandbox
 Profile: UNKNOWN
 
 get Profiles
+See result
 Please edit includes/configure.php to include these lines
 
-define('SANDBOX_ID_PERSONAL','xxxxx')
-define('SANDBOX_ID_BUSINESS','xxxxx')
+define('SANDBOX_ID_PERSONAL','xxxxx');
+define('SANDBOX_ID_BUSINESS','xxxxx');
 ```
 On your web server, edit your `includes/configure.php` file as instructed.
 
@@ -89,9 +90,10 @@ TransferWise Server: Production
 Profile: UNKNOWN
 
 get Profiles
-See resultPlease edit includes/configure.php to include these lines
-define('PROFILE_ID_PERSONAL','xxxxx')
-define('PROFILE_ID_BUSINESS','xxxxx')
+See result
+Please edit includes/configure.php to include these lines
+define('PROFILE_ID_PERSONAL','xxxxx');
+define('PROFILE_ID_BUSINESS','xxxxx');
 ```
 On your web server, edit your `includes/configure.php` file as instructed.
 
