@@ -65,7 +65,7 @@ if(strstr($profileId,'_UNKNOWN') !== false) {
     echo "Please edit includes/configure.php to include these lines\n\n"; 
     echo '<pre>';
     foreach($profiles as $profile){
-      echo "define('$profilePrefix".'_ID_'.strtoupper($profile->type)."','$profile->id')\n"; 
+      echo "define('$profilePrefix".'_ID_'.strtoupper($profile->type)."','$profile->id');\n"; 
     }
     echo '</pre>';
     exit;
