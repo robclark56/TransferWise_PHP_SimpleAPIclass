@@ -71,6 +71,24 @@ if(strstr($profileId,'_UNKNOWN') !== false) {
     exit;
 }
 
+$currency='AUD';
+echo "<hr>get Acct Balance $currency<br>";
+echo '<details><summary>See result</summary>';
+echo '<pre>';
+$accountBalance = json_decode($tw->getAccountBalance($currency));
+echo print_r($accountBalance,1);
+echo '</pre>';
+echo '</details>';
+
+if(!isset($_GET['SANDBOX'])){       //Cannot get statement in Sandbox
+  echo "<hr>get Statement $currency<br>";
+  echo '<details><summary>See result</summary>';
+  echo '<pre>';
+  echo print_r(json_decode($tw->getStatement($currency,'json',gmdate("Y-m-d\TH:i:s\Z", strtotime('-1 month')))),1);
+  echo '</pre>';
+  echo '</details>';
+}
+
 echo "<hr>Get Exch Rate<br>";
 echo '<details><summary>See result</summary>';
 echo '<pre>';
@@ -145,8 +163,7 @@ $details->address->country   = 'GB';
 $details->address->city      = 'London';
 $details->address->postCode  = '10025';
 $details->address->firstLine = '50 Branson Ave';
-echo '<details>';
-echo '<summary>See result</summary>';
+echo '<details><summary>See result</summary>';
 echo '<pre>';
 echo print_r(json_decode($tw->postCreateAccount('Jean Bloggs', 'USD', 'aba', $details)),1);
 echo '</pre>';
@@ -169,10 +186,12 @@ $response = json_decode($tw->postCreateAccount('Dummy Name', 'USD', 'aba', $deta
 $accountId = $response->id;
 echo "<hr>Created account named Dummy Name, with id = $accountId";
 echo "<br>Deleting account with id = $accountId ......<br>";
+echo '<details><summary>See result</summary>';
 echo '<pre>';
 echo print_r(json_decode($tw->deleteAccount($accountId)),1);
 echo '</pre>';
-
+echo '</details>';
 ?>
 </body>
 </html>      
+   
