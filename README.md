@@ -61,7 +61,7 @@ For added security, you can ignore all the non-SANDBOX instructions below and re
 * Create a new folder that can be accessed via a URL. (e.g.) xxx/public_html/TransferWise
 * Create a subfolder called *includes*. (e.g.) xxx/public_html/TransferWise/includes
 * Create and save [includes/configure.php](code/includes/configure.php) in the includes folder. Copy and paste the 4 tokens created at TransferWise before saving
-* Create and save [includes/class_TransferWise.php](code/includes/class_TransferWise.php) in the includes folder 
+* Create and save [class_TransferWise.php](code/includes/class_TransferWise.php) in the includes folder 
 * Create and save [test.php](code/test.php) in the main folder 
 
 ### 3. Your Web Browser
