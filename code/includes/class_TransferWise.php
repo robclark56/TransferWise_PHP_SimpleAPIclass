@@ -2,14 +2,17 @@
 //
 // Filename: .../includes/class_TransferWise.php
 //
-include 'includes/configure.php';
+include 'includes/configure.php';       //Edit this file with your API KEYs, and ProfileIDs (when known)
 
 class TransferWise {
     // property declaration
     private $tw; 
     
     // method declarations
-    public function __construct($profileId, $readOnly=true) {
+    public function __construct(
+            $profileId,                 //a valid ProfileID, or PROFILE_ID_UNKNOWN if not known
+            $readOnly=true              //true (default): use the Read Only Token. false: use the full access token
+            ) {
         $this->tw = new stdClass();
         $this->tw->profileId = $profileId;
         switch($profileId){
@@ -41,18 +44,68 @@ class TransferWise {
     }
     
     public function getProfiles(){
-        return $this->GET('profiles');
+        return $this->GET('/v1/profiles');
     }
 
-    public function getTransferById($transferId){
-        return $this->GET("transfers/$transferId");
+    public function getTransferById(
+            $transferId                 //a valid transferId
+            ){
+        return $this->GET("/v1/transfers/$transferId");
     }
     
-    public function getExchangeRate($source,$target){
-        return $this->GET("rates?source=$source&target=$target");
+    public function getExchangeRate(
+            $source,                    //a 3-char currency code. e.g. 'USD'
+            $target                     //a 3-char currency code. e.g. 'EUR'
+            ){
+        return $this->GET("/v1/rates?source=$source&target=$target");
     } 
     
-    public function postCreateAddress($country, $firstLine, $postCode, $city, $state=NULL, $occupation=NULL){
+    public function getAccountBalance(
+            $currency=null              //a 3-char currency code. e.g. 'EUR'. If null, then return account balances for all currencies
+            ){
+        $json = $this->GET("/v1/borderless-accounts?profileId=".$this->tw->profileId);
+        if(!$currency) return $json;
+        $accounts = json_decode($json);
+        $details=$accounts[0];
+        if(!$details) return "Error: getAccountBalance() No Details returned: $json";
+        foreach($details->balances as $balance){
+            if($balance->currency == $currency) 
+              return json_encode($balance);
+        }
+    }
+    
+    public function getStatement(
+            $currency,                  //a 3-char currency code. e.g. 'EUR'.
+            $type='json',               //'json' (default), 'pdf', or 'csv'
+            $intervalStart=null,        //starting time of statement. Default: 1 month ago
+            $intervalEnd=null           //ending   time of statement. Default: now
+            ){
+        //Defaults
+        if(!$intervalStart){
+            //1 month ago
+            $intervalStart = gmdate("Y-m-d\TH:i:s\Z", strtotime('-1 month'));
+        }
+        if(!$intervalEnd){
+            //now
+            $intervalEnd = gmdate("Y-m-d\TH:i:s\Z");
+        }
+        
+        //get borderlessAccountId
+        $accountBalances = json_decode($this->getAccountBalance());
+        $borderlessAccountId = $accountBalances[0]->id;
+        
+        //get statement
+        return $this->GET('/v3/profiles/'.$this->tw->profileId."/borderless-accounts/$borderlessAccountId/statement.$type?currency=$currency&intervalStart=$intervalStart&intervalEnd=$intervalEnd");
+    }
+    
+    public function postCreateAddress(
+            $country,               //see https://api-docs.transferwise.com/#addresses-create
+            $firstLine, 
+            $postCode, 
+            $city, 
+            $state=NULL, 
+            $occupation=NULL
+            ){
         $data = new stdClass();
         $data->profile = $this->tw->profileId;
         $data->details->country   = $country;
@@ -62,10 +115,16 @@ class TransferWise {
         if($state)     $data->details->state = $state;
         if($occupation)$data->details->occupation = $occupation;
         
-        return $this->POST('addresses',$data);
+        return $this->POST('/v1/addresses',$data);
     }
     
-    public function postCreateAccount($accountHolderName, $currency, $type, $details, $ownedByCustomer=false){
+    public function postCreateAccount(
+            $accountHolderName,     //Name (string)
+            $currency,              //a 3-char currency code. e.g. 'EUR'.
+            $type,                  //depends on curreny. See //see https://api-docs.transferwise.com/#recipient-accounts-create
+            $details,               //see https://api-docs.transferwise.com/#recipient-accounts-create
+            $ownedByCustomer=false  //true = you own this acct. false = you don't own this acct
+            ){
         $data = new stdClass();
         $data->profile           = $this->tw->profileId;
         $data->accountHolderName = $accountHolderName;
@@ -74,13 +133,42 @@ class TransferWise {
         $data->ownedByCustomer   = $ownedByCustomer;
         $data->details           = $details;
         
-        return $this->POST('accounts',$data);
-     }
-     
-    public function deleteAccount($accountId){
-        return $this->DELETE("accounts/$accountId");
+        return $this->POST('/v1/accounts',$data);
     }
     
+    public function postProfileWebhookCreate(
+            $name,                  //any nickname
+            $trigger_on,            //'transfers#state-change', 'transfers#active-cases', or 'balances#credit'  
+            $url                    //the URL where your server will be listening for events
+            ){
+        $data = new stdClass();
+        $data->name                = $name;
+        $data->trigger_on          = $trigger_on;
+        $data->delivery->version   = '2.0.0';
+        $data->delivery->url       = $url;
+         
+        return $this->POST('/v3/profiles/'.$this->tw->profileId.'/subscriptions',$data);
+    }
+    
+    public function getProfileWebhookList(){
+        return $this->GET('/v3/profiles/'.$this->tw->profileId.'/subscriptions');
+    }
+
+    public function deleteProfileWebhook(
+            $id             //id of ProfileWebhook to delete, as returned by getProfileWebhookList()
+            ){
+        return $this->DELETE('/v3/profiles/'.$this->tw->profileId."/subscriptions/$id");
+    }
+
+    public function deleteAccount(
+            $accountId      //id of account to delete.
+            ){
+        return $this->DELETE("/v1/accounts/$accountId");
+    }
+    
+    
+//////////////// Internal (private) worker functions ////////////////////////////
+
     private function POST($url,$data){
         return $this->curl('POST',$url,$data);
     }
@@ -103,7 +191,7 @@ class TransferWise {
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-        curl_setopt($ch, CURLOPT_URL, $this->tw->url."/v1/$curl_url");
+        curl_setopt($ch, CURLOPT_URL, $this->tw->url."$curl_url");
         $headerArray[] = "Authorization: Bearer ".$this->tw->api_key;
         if($mode=='POST'){
             $payload = json_encode($data);
@@ -115,6 +203,7 @@ class TransferWise {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headerArray);
         
         $response = curl_exec($ch);
+        
         if($response === false){
             echo 'Curl error: ' . curl_error($ch);
         }
