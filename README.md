@@ -108,6 +108,9 @@ You should now see something like this:
 TransferWise Server: Sandbox
 Profile: PERSONAL
 
+get Acct Balance AUD
+See result
+
 Get Exch Rate
 See result
 
@@ -142,6 +145,9 @@ You should now see something like this:
 ```
 TransferWise Server: Production
 Profile: PERSONAL
+
+get Acct Balance AUD
+See result
 
 Get Exch Rate
 See result
