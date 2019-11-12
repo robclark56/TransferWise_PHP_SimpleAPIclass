@@ -108,6 +108,7 @@ class TransferWise {
             ){
         $data = new stdClass();
         $data->profile = $this->tw->profileId;
+        $data->details = new stdClass();
         $data->details->country   = $country;
         $data->details->firstLine = $firstLine;
         $data->details->postCode  = $postCode;
@@ -211,6 +212,4 @@ class TransferWise {
         return  $response;
     }
 }
-
-
 ?>
