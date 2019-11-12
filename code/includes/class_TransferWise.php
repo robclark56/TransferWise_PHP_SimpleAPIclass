@@ -145,6 +145,7 @@ class TransferWise {
         $data = new stdClass();
         $data->name                = $name;
         $data->trigger_on          = $trigger_on;
+        $data->delivery            = new stdClass();
         $data->delivery->version   = '2.0.0';
         $data->delivery->url       = $url;
          
