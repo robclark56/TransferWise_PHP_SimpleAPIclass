@@ -98,6 +98,16 @@ class TransferWise {
         return $this->GET('/v3/profiles/'.$this->tw->profileId."/borderless-accounts/$borderlessAccountId/statement.$type?currency=$currency&intervalStart=$intervalStart&intervalEnd=$intervalEnd");
     }
     
+    public function getRecipientAccounts(
+            $profileId=null,        //[optional] Personal or business profile id  
+            $currency=null          //[optional] a 3-char currency code. e.g. 'EUR'.
+            ){
+        $profileId && $data[] = array('profileId' => $profileId);
+        $currency  && $data[] = array('currency' => $currency);
+        $data && ($args='?'.http_build_query($data));
+        return $this->GET('/v1/accounts'.$args);
+    }
+    
     public function postCreateAddress(
             $country,               //see https://api-docs.transferwise.com/#addresses-create
             $firstLine, 
