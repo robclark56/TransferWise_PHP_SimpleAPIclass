@@ -147,6 +147,53 @@ class TransferWise {
         return $this->POST('/v1/accounts',$data);
     }
     
+    public function postCreateQuote(
+            $type,               	//'BALANCE_PAYOUT' for payments or 'BALANCE_CONVERSION' for conversion between balances
+            $sourceCurrency,        //a 3-char currency code. e.g. 'EUR'.
+            $targetCurrency,        //a 3-char currency code. e.g. 'EUR'.
+            $sourceAmount=null,     //Amount in source currency. If specified, $targetAmount must be null.
+            $targetAmount=null      //Amount in target currency. If specified, $sourceAmount must be null. 
+            ){
+        $data = new stdClass();
+        $data->profile           = $this->tw->profileId;
+        $data->target            = $targetCurrency;
+        $data->source            = $sourceCurrency;
+        $data->rateType          = 'FIXED';
+        if($targetAmount) $data->targetAmount = $targetAmount;
+        else              $data->sourceAmount = $sourceAmount;
+        $data->type              = $type;
+       
+        return $this->POST('/v1/quotes',$data);
+    }
+    
+    public function postCreateTransfer(
+            $targetAccount,         //recipient account id 
+            $quoteId,               //quote id
+            $reference,             //Recipient will see this reference text in their bank statement
+            $transferPurpose =null, //[Conditional] see: https://api-docs.transferwise.com/#transfers-requirements
+            $sourceOfFunds =null    //[Conditional]see: https://api-docs.transferwise.com/#transfers-requirements
+            ){
+        $data = new stdClass();
+        $data->targetAccount            = $targetAccount;
+        $data->quote                    = $quoteId;
+        $data->customerTransactionId    = $this->createUUID();
+        $data->details =  new stdClass();
+        $data->details->reference       = $reference;
+        $transferPurpose && $data->details->transferPurpose = $transferPurpose;
+        $sourceOfFunds && $data->details->sourceOfFunds = $sourceOfFunds;
+    
+        return $this->POST('/v1/transfers',$data);
+    }
+    
+    public function postFundTransfer(
+            $transferId             //transferID from postCreateTransfer()
+            ){
+        $data = new stdClass();
+        $data->type     = 'BALANCE';
+        
+        return $this->POST("/v3/profiles/".$this->tw->profileId."/transfers/$transferId/payments",$data);
+    }
+    
     public function postProfileWebhookCreate(
             $name,                  //any nickname
             $trigger_on,            //'transfers#state-change', 'transfers#active-cases', or 'balances#credit'  
