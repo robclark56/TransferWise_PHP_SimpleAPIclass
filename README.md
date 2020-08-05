@@ -79,6 +79,7 @@ Two methods are given here to create your pairs of private/public pem files.
   * Enter security code (i.e. 111111)  ->  *Done*
   * Enter name: *Sandbox Public Key*
   * Select your sandbox_public.pem file  ->  *Add key*
+  * Click *Turn on SCA* (This option will be On in all cases after 1-Oct-2020)
   * Create a Business account. (This shares the same API tokens and Public key already created) 
   * Logout
 
@@ -92,6 +93,7 @@ Two methods are given here to create your pairs of private/public pem files.
   * Enter security code  ->  *Done*
   * Enter name: *Public Key*
   * Select your public.pem file  ->  *Add key*
+  * Click *Turn on SCA* (This option will be On in all cases after 1-Oct-2020)
   * Logout
 
 ### 2. Web Server
