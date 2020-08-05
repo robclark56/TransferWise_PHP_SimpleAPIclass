@@ -213,23 +213,20 @@ Create USD Recipient
 See: https://api-docs.transferwise.com/#recipient-accounts-create-usd-recipient
 See result
 
-Created account named Dummy Name, with id =
-Deleting account with id = ......
-stdClass Object
-(
-    [timestamp] => 2019-10-17T07:58:30.514570Z
-    [errors] => Array
-        (
-            [0] => stdClass Object
-                (
-                    [code] => INVALID_INPUT
-                    [message] => Unable to process request
-                    [arguments] => Array
-                        (
-                        )
-                )
-        )
-)
+Transfer Funds: Step 1 - Create Quote
+See result
+
+Transfer Funds: Step 2 - Create Recipient
+See result
+
+Transfer Funds: Step 3 - Create Transfer
+See result
+
+Transfer Funds: Step 4 - Fund Transfer
+See result
+
+Deleting account with id =  ......
+See result
 ```
 
 Note that it is normal to see some errors. The `test.php` file was trying to create real payment accounts with fake details, so they failed. If you edit `test.php` with valid account details, it should work.
