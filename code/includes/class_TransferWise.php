@@ -7,6 +7,7 @@ include 'includes/configure.php';       //Edit this file with your API KEYs, and
 class TransferWise {
     // property declaration
     private $tw; 
+    private $OTT;       //One Time Token. See https://api-docs.transferwise.com/#payouts-guide-strong-customer-authentication 
     
     // method declarations
     public function __construct(
@@ -21,6 +22,7 @@ class TransferWise {
             case PROFILE_ID_BUSINESS: 
                 $this->tw->api_key =  ($readOnly?API_KEY_TOKEN_READONLY:API_KEY_TOKEN_FULL); 
                 $this->tw->url     = 'https://api.transferwise.com';
+                $this->tw->priv_pem= PRIV_PEM;
                 break;
                 
             case SANDBOX_ID_UNKNOWN: 
@@ -28,6 +30,7 @@ class TransferWise {
             case SANDBOX_ID_BUSINESS: 
                 $this->tw->api_key =  ($readOnly?SANDBOX_TOKEN_READONLY:SANDBOX_TOKEN_FULL); 
                 $this->tw->url     = 'https://api.sandbox.transferwise.tech';
+                $this->tw->priv_pem= SANDBOX_PRIV_PEM;
                 break;
                 
             default:
@@ -181,7 +184,6 @@ class TransferWise {
         $data->details->reference       = $reference;
         $transferPurpose && $data->details->transferPurpose = $transferPurpose;
         $sourceOfFunds && $data->details->sourceOfFunds = $sourceOfFunds;
-    
         return $this->POST('/v1/transfers',$data);
     }
     
@@ -244,22 +246,46 @@ class TransferWise {
         return $this->curl('PUT',$url);
     }
 
-    private function curl($mode, $curl_url,$data=NULL){
+    private function headerLineCallback($curl, $headerLine){
+        $len = strlen($headerLine);
+        $header = explode(':', $headerLine, 2);
+        if (count($header) < 2) // ignore invalid headers
+           return $len;
+           
+        if(strtolower(trim($header[0])) == 'x-2fa-approval')
+            $this->OTT = trim($header[1]);
+
+        return $len;
+    }
+
+    private function curl($mode, $curl_url,$data=NULL,$headers=NULL){
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+        
+        //Need to view headers for SCA (https://api-docs.transferwise.com/#payouts-guide-strong-customer-authentication)
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, array($this,'headerLineCallback'));
+        
         curl_setopt($ch, CURLOPT_URL, $this->tw->url."$curl_url");
         $headerArray[] = "Authorization: Bearer ".$this->tw->api_key;
         if($mode=='POST'){
             $payload = json_encode($data);
             $headerArray[] = "Content-Type: application/json";
             $headerArray[] = 'Content-Length: ' . strlen($payload);
+            if($headers){
+                foreach($headers as $header){
+                    $headerArray[] = $header;
+                }
+            }
             curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         }
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $mode); 
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headerArray);
+        
+        //Reset One Time Token
+        $this->OTT = ''; 
         
         $response = curl_exec($ch);
         
@@ -267,6 +293,28 @@ class TransferWise {
             echo 'Curl error: ' . curl_error($ch);
         }
         curl_close ($ch);
+        
+        //See if need to resend because of SCA
+        if(!empty($this->OTT)){
+            //We have received a One Time Token
+            $SCA=json_decode($response);
+            if($SCA->status==403 && !empty($SCA->path)){
+                if(defined('PHP_MAJOR_VERSION') && (PHP_MAJOR_VERSION >= 5) &&  (PHP_MINOR_VERSION >= 4) && (PHP_RELEASE_VERSION >= 8)){
+                  //Requires PHP Version 5.4.8 or higher
+                  $pkeyid = openssl_pkey_get_private('file://'.$this->tw->priv_pem);
+                  openssl_sign($this->OTT, $Xsignature, $pkeyid,OPENSSL_ALGO_SHA256);
+                  openssl_free_key($pkeyid);
+                  $Xsignature= base64_encode( $Xsignature);
+                } else {
+                  //Requires access to shell commands
+                  $Xsignature= shell_exec("printf '$this->OTT' | openssl sha256 -sign ".$this->tw->priv_pem." | base64 -w 0") ;
+                }
+                $headers[] = "x-2fa-approval: $this->OTT";
+                $headers[] = "X-Signature: $Xsignature";
+                $response = $this->curl($mode, $SCA->path,$data,$headers);
+            }
+        }
+        
         return  $response;
     }
     
