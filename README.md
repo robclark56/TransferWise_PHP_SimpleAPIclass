@@ -55,7 +55,7 @@ Two methods are given here to create your pairs of private/public pem files.
     1. Click Generate New Keys
     1. Create file on local PC called sandbox_public.pem
     1. Copy and Paste all the Private Key text into sandbox_public.pem. Save.
-    1. Repeat steps above for files private.pem and private.pem
+    1. Repeat steps above for files private.pem and public.pem
     1. Reconnect your computer to the network
     
 1. Method 2 - Create pem files from Linux command line
