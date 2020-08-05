@@ -24,7 +24,7 @@
   <title>TransferWise Test</title>
 </head>
 <body>
-<?
+<?php
 
 include('includes/class_TransferWise.php');
 
@@ -179,21 +179,56 @@ $details->abartn        = '111000025';
 $details->accountNumber = '12345678';
 $details->accountType   = 'CHECKING';
 $details->address       = new stdClass();
-$details->address->country   = 'GB';
-$details->address->city      = 'London';
-$details->address->postCode  = '10025';
-$details->address->firstLine = '50 Branson Ave';
+$details->address->country   = 'US';
+$details->address->city      = 'Houston';
+$details->address->state      = 'TX';
+$details->address->postCode  = '77777';
+$details->address->firstLine = '99 Any St';
 
-$response = json_decode($tw->postCreateAccount('Dummy Name', 'USD', 'aba', $details));
-$accountId = $response->id;
-echo "<hr>Created account named Dummy Name, with id = $accountId";
-echo "<br>Deleting account with id = $accountId ......<br>";
-echo '<details><summary>See result</summary>';
+echo "<hr>Transfer Funds: Step 1 - Create Quote<br>";
+echo '<details>';
+echo '<summary>See result</summary>';
 echo '<pre>';
-echo print_r(json_decode($tw->deleteAccount($accountId)),1);
+$Quote=json_decode($tw->postCreateQuote('BALANCE_PAYOUT','USD','USD',10 ));
+echo print_r($Quote,1);
 echo '</pre>';
 echo '</details>';
+
+echo "<hr>Transfer Funds: Step 2 - Create Recipient<br>";
+echo '<details>';
+echo '<summary>See result</summary>';
+echo '<pre>';
+$recipientAcct   = json_decode($tw->postCreateAccount('Dummy Name', 'USD', 'aba', $details));
+$recipientAcctId = $recipientAcct->id;
+echo print_r($recipientAcct,1);
+echo '</pre>';
+echo '</details>';
+
+echo "<hr>Transfer Funds: Step 3 - Create Transfer<br>";
+echo '<details>';
+echo '<summary>See result</summary>';
+echo '<pre>';
+$Transfer = json_decode($tw->postCreateTransfer($recipientAcctId,$Quote->id,'Test','verification.transfers.purpose.pay.bills','verification.source.of.funds.other'));
+$TransferId = $Transfer->id;
+echo print_r($Transfer,1);
+echo '</pre>';
+echo '</details>';
+
+echo "<hr>Transfer Funds: Step 4 - Fund Transfer<br>";
+echo '<details>';
+echo '<summary>See result</summary>';
+echo '<pre>';
+echo print_r(json_decode($tw->postFundTransfer($TransferId)),1);
+echo '</pre>';
+echo '</details>';
+
+echo "<hr>Deleting account with id = $recipientAcctId ......<br>";
+echo '<details><summary>See result</summary>';
+echo '<pre>';
+echo print_r(json_decode($tw->deleteAccount($recipientAcctId)),1);
+echo '</pre>';
+echo '</details>';
+
 ?>
 </body>
-</html>      
-   
+</html>     
