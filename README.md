@@ -19,17 +19,23 @@ For added security, you can ignore all the non-SANDBOX instructions below and re
 
 ## Summary of Steps
 
+1. Strong Customer Authentication (SCA) keys
+    1. Create sandbox sandbox_private.pem and sandbox_public.pem files
+    1. Create production private.pem and public.pem files
 1. Transfer Wise
     1. Create Sandbox account (Personal and Business)
         1. Create API Token - Read only
         1. Create API Token - Full access
+        1. Upload sandbox_public.pem file
     1. Create Production account (Personal, if not already created)
         1. Create API Token - Read only
         1. Create API Token - Full access
+        1. Upload public.pem file
 1. Your Web Server
     1. Create configure.php. Enter the API Tokens.
     1. Create class_TransferWise.php
     1. Create test.php
+    1. Create private/public pem files
 1. Your Web Browser
     1. Run test.php to get profileIDs
     1. Update configure.php with these profileIDs
@@ -38,6 +44,30 @@ For added security, you can ignore all the non-SANDBOX instructions below and re
        1. PRODUCTION (live)
 
 ## Step by Step
+### 1. Strong Customer Authentication (SCA) keys
+Details on SCA are here: https://api-docs.transferwise.com/#payouts-guide-strong-customer-authentication
+
+Two methods are given here to create your pairs of private/public pem files.
+1. Method 1 - Create pem files online
+    1. Visit: https://travistidwell.com/jsencrypt/demo/
+    1. Disconnect your computer from all networks.  (The web page above does not need the Internet. This is just an extra security measure.)
+    1. Select Key Size = 2048
+    1. Click Generate New Keys
+    1. Create file on local PC called sandbox_public.pem
+    1. Copy and Paste all the Private Key text into sandbox_public.pem. Save.
+    1. Repeat steps above for files private.pem and private.pem
+    1. Reconnect your computer to the network
+    
+1. Method 2 - Create pem files from Linux command line
+    1. At the command line of a linux computer enter these commands
+    ```
+    $ openssl genrsa -out sandbox_private.pem 2048
+    $ openssl rsa -pubout -in sandbox_private.pem -out sandbox_public.pem
+    
+    $ openssl genrsa -out private.pem 2048
+    $ openssl rsa -pubout -in private.pem -out public.pem
+    ```
+    1. Download the 4 files to your local PC
 
 ### 1. Transfer Wise
 * Visit https://sandbox.transferwise.tech/
@@ -45,7 +75,11 @@ For added security, you can ignore all the non-SANDBOX instructions below and re
   * Open Settings page. https://sandbox.transferwise.tech/user/settings
   * Add new API token: Full access
   * Add new API token: Read only
-  * Create a Business account. (This shares the same API tokens already created) 
+  * Click *Manage public keys*  ->  *Add new key*  ->  *Continue*
+  * Enter security code (i.e. 111111)  ->  *Done*
+  * Enter name: *Sandbox Public Key*
+  * Select your sandbox_public.pem file  ->  *Add key*
+  * Create a Business account. (This shares the same API tokens and Public key already created) 
   * Logout
 
 * Visit https://transferwise.com
@@ -54,15 +88,24 @@ For added security, you can ignore all the non-SANDBOX instructions below and re
   * Open Settings page. https://transferwise.com/user/settings
   * Add new API token: Full access
   * Add new API token: Read only
+  * Click *Manage public keys*  ->  *Add new key*  ->  *Continue*
+  * Enter security code  ->  *Done*
+  * Enter name: *Public Key*
+  * Select your public.pem file  ->  *Add key*
   * Logout
 
 ### 2. Web Server
 * Login to your Web server
 * Create a new folder that can be accessed via a URL. (e.g.) xxx/public_html/TransferWise
 * Create a subfolder called *includes*. (e.g.) xxx/public_html/TransferWise/includes
-* Create and save [includes/configure.php](code/includes/configure.php) in the includes folder. Copy and paste the 4 tokens created at TransferWise before saving
+* Create and save [includes/configure.php](code/includes/configure.php) in the includes folder. Copy and paste the 4 tokens created at TransferWise before saving.
+* Create and save sandbox_private.pem in the includes folder
+* Create and save private.pem in the includes folder
 * Create and save [class_TransferWise.php](code/includes/class_TransferWise.php) in the includes folder 
 * Create and save [test.php](code/test.php) in the main folder 
+* Change the permissions on your includes folder to remove WRITE permission (e.g 0555)
+* Change the permissions on your main folder to remove WRITE permission (e.g 0555)
+
 
 ### 3. Your Web Browser
 Using your favourite web browser, visit your test.php page with a URL similar to this: 
