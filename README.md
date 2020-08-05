@@ -175,8 +175,20 @@ Create USD Recipient
 See: https://api-docs.transferwise.com/#recipient-accounts-create-usd-recipient
 See result
 
-Created account named Dummy Name, with id = 13708891
-Deleting account with id = 13708891 ......
+Transfer Funds: Step 1 - Create Quote
+See result
+
+Transfer Funds: Step 2 - Create Recipient
+See result
+
+Transfer Funds: Step 3 - Create Transfer
+See result
+
+Transfer Funds: Step 4 - Fund Transfer
+See result
+
+Deleting account with id =  ......
+See result
 ```
 
 Click on the *See result* icons to expand the response returned by TransferWise. You should see that each succeeded.
