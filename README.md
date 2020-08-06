@@ -105,8 +105,9 @@ Two methods are given here to create your pairs of private/public pem files.
 * Create and save private.pem in the includes folder
 * Create and save [class_TransferWise.php](code/includes/class_TransferWise.php) in the includes folder 
 * Create and save [test.php](code/test.php) in the main folder 
-* Change the permissions on your includes folder to remove WRITE permission (e.g 0555)
-* Change the permissions on your main folder to remove WRITE permission (e.g 0555)
+* Restrict the permissions of the private.pem file to 0400  (= User Read only)
+* Restrict the permissions of the includes folder to 0555  
+* Restrict the permissions of the main folder to 0555  
 
 
 ### 3. Your Web Browser
