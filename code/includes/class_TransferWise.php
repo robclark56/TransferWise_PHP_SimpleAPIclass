@@ -299,7 +299,7 @@ class TransferWise {
             //We have received a One Time Token
             $SCA=json_decode($response);
             if($SCA->status==403 && !empty($SCA->path)){
-                if(defined('PHP_MAJOR_VERSION') && (PHP_MAJOR_VERSION >= 5) &&  (PHP_MINOR_VERSION >= 4) && (PHP_RELEASE_VERSION >= 8)){
+                if(version_compare(PHP_VERSION, '5.4.8') >= 0){
                   //Requires PHP Version 5.4.8 or higher
                   $pkeyid = openssl_pkey_get_private('file://'.$this->tw->priv_pem);
                   openssl_sign($this->OTT, $Xsignature, $pkeyid,OPENSSL_ALGO_SHA256);
