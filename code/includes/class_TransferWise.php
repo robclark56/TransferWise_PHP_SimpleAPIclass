@@ -274,14 +274,14 @@ class TransferWise {
             $payload = json_encode($data);
             $headerArray[] = "Content-Type: application/json";
             $headerArray[] = 'Content-Length: ' . strlen($payload);
-            if($headers){
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        }
+        if($headers){
                 foreach($headers as $header){
                     $headerArray[] = $header;
                 }
-            }
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         }
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $mode); 
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $mode);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headerArray);
         
         //Reset One Time Token
@@ -311,7 +311,7 @@ class TransferWise {
                 }
                 $headers[] = "x-2fa-approval: $this->OTT";
                 $headers[] = "X-Signature: $Xsignature";
-                $response = $this->curl($mode, $SCA->path,$data,$headers);
+                $response = $this->curl($mode,$curl_url,$data,$headers);
             }
         }
         
