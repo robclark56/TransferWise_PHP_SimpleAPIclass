@@ -1,5 +1,7 @@
 # TransferWise Simple API PHP Class
 
+# It's a fork from robclark56's to iron out a few bugs, and deprecated calls in newer php versions. 
+
 ## Introduction
 This PHP class is completely standalone; it does not require composer to bring in other code. As such this is a light-weight module for easy inclusion into bigger projects.
 
